@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Display</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <link rel="stylesheet" href="./css/sign.css">
+  <style>
+    #table_doctor,#table_patient{
+      border-collapse: collapse;
+      width: 100%;
+      background-color: white;
+    }
+
+    #info_patient{
+      margin-top: 72px;
+      display: none;
+    }
+    #info_medi{
+      display: none;
+      margin-top: 72px;
+      margin-bottom: 72px;
+    }
+    #schedule_info{
+      margin-top: 72px;
+
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+    .btn-submit{
+      padding: 10px 20px;
+    }
+    .check:hover{
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="back-icon">
+    <a class="back_icon-wrap" href="javascript:history.go(-1)">
+        <i class="far fa-times-circle"></i>
+    </a>
+</div>
+<div class="container" id="schedule_info">
+  <div class="row">
+    <div class="col col-m-12">
+      <h2 id="header_patient">Schedule for Next 7 Days</h2>
+  
+        <table id="table_doctor">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>8h</th>
+              <th>9h</th>
+              <th>10h</th>
+              <th>13h</th>
+              <th>14h</th>
+              <th>15h</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="container" id="info_patient">
+
+  <div class="row">
+    <div class="col">
+      <h2>Patient Information</h2>
+      <table id="table_patient">
+        <thead>
+          <tr>
+              <th></th>
+              <th>Full Name</th>
+              <th>Birthday</th>
+              <th>Phone Number</th>
+              <th>Email</th>
+
+          </tr>
+      </thead>
+      <tbody >
+        <tr id="info">
+            <td>Info:</td>
+
+        </tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="info_medi">
+
+  <div class="row">
+    <div class="col">
+      <h2>Examination Results</h2>
+      <form id="form-medi" action="/post-medi" method="post"  >
+        <div class="form-group">
+            <label for="disease">Disease Name</label>
+            <input type="text" id="disease"  name="disease" placeholder="disease" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="medicine">Medicine Name</label>
+          <input type="text" id="medicine"  name="medicine" placeholder="medicine" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="dosage">Dosage</label>
+        <input type="text" id="dosage"  name="dosage" placeholder="dosage" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input type="text" id="price"  name="price" placeholder="price" class="form-control" required>
+  </div>
+
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <input type="button" class="btn btn-submit" onclick="submitForm()" value="Submit">
+
+    </form>
+    </div>
+  </div>
+</div>
+  <!-- jQery -->
+  <script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<!-- nice select -->
+<script>
+    const info_medi = document.getElementById('info_medi');
+
+  var a;
+  document.addEventListener('DOMContentLoaded', function () {
+    // Lấy ngày hiện tại
+    const currentDate = new Date();
+
+    // Tạo một bảng lịch cho 7 ngày tiếp theo
+    for (let i = 0; i < 7; i++) {
+      const row = document.createElement('tr');
+      const date = new Date(currentDate);
+      date.setDate(currentDate.getDate() + i -1);
+
+      // Hiển thị ngày
+      const dayCell = document.createElement('td');
+      dayCell.textContent = formatDate(date);
+      dayCell.id = formatDate(date);
+      row.appendChild(dayCell);
+
+      // Hiển thị các khung giờ
+      const timeSlots = ['8h', '9h', '10h', '13h', '14h', '15h'];
+      for (const timeSlot of timeSlots) {
+        const cell = document.createElement('td');
+        // Có thể thêm logic khác ở đây để xử lý nếu cần
+        cell.textContent = ''; // Đặt nội dung mặc định
+        cell.setAttribute("onclick", "handleClick(this)");
+        cell.className = 'check';
+        row.appendChild(cell);
+      }
+
+      // Thêm hàng vào bảng
+      document.getElementById('scheduleBody').appendChild(row);
+    }
+    
+    fetch(`/get-info-app`)
+      .then(response => response.json())
+      .then(data => {
+        let timedate = ['8h','9h','10h','13h','14h','15h']
+        for (let i = 0; i < data.length; i++) {
+          
+            let date = formatDate(data[i][`Appoint Date`]);
+            const dateCell = document.getElementById(`${date}`); // +1 vì chỉ số 0 là tiêu đề ngày
+            var parentElement = dateCell.parentNode;
+            console.log(dateCell);
+            for(let j = 0; j < data.length; j++) {
+                if(data[i][`Start Time`] == timedate[j] ){
+                let Child = parentElement.children[j+1];
+                console.log(Child)
+                Child.style.background = 'green';
+                Child.id = `${data[i][`Patient ID`]}`;
+            }
+            }
+
+        }
+
+    })
+    .catch(error => console.log('Error:', error));
+
+
+});
+  function handleClick(element) {
+    // Lấy id của bệnh nhân
+    var elementId = parseInt(element.id, 10);
+    fetch(`/get-patient-app`)
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(patient => {
+          a = patient[`Patient ID`];
+          console.log(a-elementId);
+          if(a == elementId){
+            const table_patient = document.getElementById('info_patient');
+
+            const info = document.getElementById('info'); 
+            info.innerHTML="<td>Info:</td>";
+            table_patient.style.display = 'block'
+            let patient_key = ['Full Name','Birth','Phone Number','email']
+            for (var key in patient) {
+              for(let i = 0; i < patient_key.length;i++){
+                if (key == patient_key[i]) {
+                  if(key == 'Birth'){
+                  var value = formatDate(patient[key])
+                  const Cell_info= document.createElement('td');
+                  Cell_info.textContent = value;
+                  info.appendChild(Cell_info);
+                }else{
+                  var value = patient[key]
+                  const Cell_info= document.createElement('td');
+                  Cell_info.textContent = value;
+                  info.appendChild(Cell_info);
+                }
+
+              }
+
+            
+            }
+
+            
+
+
+          }
+
+        }
+          
+      });
+
+    })
+    .catch(error => console.log('Error:', error));
+    info_medi.style.display = 'block';
+
+
+  
+  }
+
+
+  // Hàm chuyển định dạng ngày thành chuỗi 'YYYY-MM-DD'
+  function formatDate(date) {
+
+
+
+    let mysqlDateString = date;
+
+    // Tạo một đối tượng Date từ chuỗi
+    let dateObject = new Date(mysqlDateString);
+
+    // Lấy thông tin ngày, tháng, năm
+    let year = dateObject.getFullYear();
+    let month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Thêm '0' phía trước nếu cần
+    let day = dateObject.getDate().toString().padStart(2, '0'); // Thêm '0' phía trước nếu cần
+
+    // Tạo chuỗi mới theo định dạng "yyyy-MM-dd"
+    return `${year}-${month}-${day}`;   
+  }
+
+ 
+  const form_medi = document.getElementById('form-medi');
+
+
+    function submitForm(){
+      event.preventDefault();
+      console.log(a);
+      let formData1 = {
+        disease: document.getElementById('disease').value,
+        medicine: document.getElementById('medicine').value,
+        dosage:document.getElementById('dosage').value,
+        price: document.getElementById('price').value,
+        id_patient:a
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/post-medi',
+            data: formData1,
+            success: function(data) {
+              console.log(data);
+              alert(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('There has been a problem with your AJAX request:', errorThrown);
+            }
+        });
+        form_medi.submit();
+      }
+
+    
+    if(info_medi.style.display != 'none'){
+
+    }
+</script>
+
+</body>
+</html>

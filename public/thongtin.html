@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERSONAL INFORMATION</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <link rel="stylesheet" href="css/sign.css">
+    <style>
+       
+        .info_person #auth-form{
+            display: block;
+        }
+        
+        
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .label-header{
+            text-align: center;
+        }
+
+
+        #table_doctor,#table_patient{
+        border-collapse: collapse;
+        width: 100%;
+        background-color: white;
+        }
+
+        #info_patient{
+        margin-top: 72px;
+      margin-bottom: 72px;
+
+        }
+        #info_medi{
+            width: 100%;
+            margin-bottom: 72px;
+        }
+
+        th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        }
+
+        th {
+        background-color: #f2f2f2;
+        }
+        .btn-submit{
+        padding: 10px 20px;
+        }
+        .check:hover{
+        cursor: pointer;
+        }
+        .container{
+            margin-top: 200px;
+        }
+        #content{
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="back-icon">
+        <a class="back_icon-wrap" href="javascript:history.go(-1)">
+            <i class="far fa-times-circle"></i>
+        </a>
+    </div>
+
+</div>
+<div id="content">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-auto" style="margin: auto">
+                <div id="auth-container" class="info_person">
+                    <label for="auth-form" class="label-header">PERSONAL INFORMATION:</label>
+                    <form id="auth-form" action="/submit-form" method="post" onsubmit="return submitForm()">
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" placeholder="name" required >
+                        </div>
+                        <div class="form-group">
+                            <label for="birthday">Date of birthday:</label>
+                            <input type="date" id="birthday" name="birthday" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" placeholder="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numberphone">Phone number:</label>
+                            <input type="tel" id="numberphone" name="numberphone" placeholder="phone number">
+                        </div>   
+                        
+                        
+            
+            
+                        <div id="messageContainer"></div>
+                        <input type="submit" class="btn btn-sign" id="submitButton" value="Submit">
+            
+                    </form>
+                
+                
+                </div>
+            </div>
+        
+        
+        
+        </div>
+        
+        <div class="row" id="info_medi">
+            <div class="col">
+                <div class="container" id="info_patient">
+        
+                    <div class="row">
+                        <div class="col">
+                            <h2>Medicine Information</h2>
+                            <table id="table_patient">
+                            <thead>
+                                <tr>
+                                    <th>Disease Name</th>
+                                    <th>Medicine Name</th>
+                                    <th>Dosage</th>
+                                    <th>Price</th>
+                    
+                                </tr>
+                            </thead>
+                            <tbody id="info" >
+                
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<!-- bootstrap js -->
+<script src="js/bootstrap.js"></script>
+<!-- nice select -->
+
+
+<!-- datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+
+<script>
+    const info = document.getElementById('info');
+    var id;
+    window.onload = function(){
+        
+        fetch('/get-info')
+            .then(response => response.json())
+            .then(data => {
+                let info = ['name', 'birthday', 'email' , 'numberphone', 'idperson'];
+                let getdate = [`Full Name`, 'Birth', 'email' , `Phone Number`, `Patient ID`];
+
+                for (let i = 0; i < info.length; i++) {
+                    if(info[i] == 'birthday'){
+                        let mysqlDateString = data[0][`${getdate[i]}`];
+
+                        // Tạo một đối tượng Date từ chuỗi
+                        let dateObject = new Date(mysqlDateString);
+
+                        // Lấy thông tin ngày, tháng, năm
+                        let year = dateObject.getFullYear();
+                        let month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Thêm '0' phía trước nếu cần
+                        let day = dateObject.getDate().toString().padStart(2, '0'); // Thêm '0' phía trước nếu cần
+
+                        // Tạo chuỗi mới theo định dạng "yyyy-MM-dd"
+                        valu = `${year}-${month}-${day}`;   
+                        let a = document.getElementById(`${info[i]}`);     
+                        a.value = valu;
+                    }else{
+                        let a = document.getElementById(`${info[i]}`);     
+                        a.value = data[0][`${getdate[i]}`];
+                    }
+
+                }
+                
+
+                } )
+            .catch(error => console.log('Error fetching options:', error));
+        }
+        fetch(`/get-medi`)
+        .then(response => response.json())
+        .then(data => {
+        console.log(data);
+        data.forEach(medi => {
+            console.log(medi);
+                const a = document.createElement('tr')
+                a.innerHTML = `                
+
+                <th>${medi[`Disease Name`]}</th>
+                <th>${medi[`Medicine Name`]}</th>
+                <th>${medi[`Dosage`]}</th>
+                <th>${medi[`Price`]}</th>
+                `
+                info.appendChild(a);
+
+      });
+
+    })
+    .catch(error => console.log('Error:', error));
+
+
+    function submitForm() {
+      var formData = {
+        name: $("#name").val(),
+        email: $("#email").val(),
+        birthday: $("#birthday").val(),
+        numberphone: $("#numberphone").val(),
+        idperson: $("#idperson").val()
+      };
+      event.preventDefault();
+      $.ajax({
+        type: "POST",
+        url: "/submit-form",
+        data: formData,
+        success: function(response) {
+            // Hiển thị thông báo dựa vào phản hồi từ server
+            $('#messageContainer').html('<p>' + response + '</p>');
+        },
+            error: function(error) {
+            console.error('Error:', error);
+        },
+        // complete: function(response) {
+        //     alert('Gửi thông tin thành công');
+        // }
+      });
+    }
+</script>
+
+
+
+</body>
+</html>
