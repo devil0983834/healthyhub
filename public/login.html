@@ -214,15 +214,25 @@
         let a;
             
         formRegister.addEventListener('submit', async function(event){
+            let check = false;
             event.preventDefault();
 
             const username = document.getElementById('form-username2').value;
             const password = document.getElementById('form-password2').value;
             const confirmPassword = document.getElementById('form-passwordRetype').value;
 
+
+
             if (password !== confirmPassword) {
-                alert('Mật khẩu không khớp. Vui lòng kiểm tra lại.');
-                return;
+                $('#messageContainer').html('<p>Mật khẩu lần 2 không khớp. Vui lòng kiểm tra lại.</p>');
+            }
+            else{
+                if (password.length >= 6) {
+                check = true;
+                } else {
+                    $('#messageContainer').html('<p>Mật khẩu tối thiểu 6 chữ số.</p>');
+                }
+
             }
             const email1 = email.value;
             console.log(email1);
@@ -231,23 +241,46 @@
                 password: password,
                 email: email1 // Điền giá trị email từ biểu mẫu (nếu có)
             };
+            if(check) {
+                fetch('/options')
+                .then(response => response.json())
+                .then(data => {
+                    let a=true;
+                    data.forEach(element => {
+                        if(element[`UserName`]==username){
+
+                            a=false
+                        }
+                    });
+                    if(a){
+                        $.ajax({
+                        type: "POST",
+                        url: "/register",
+                        data: formData,
+                        success: function(response) {
+                            // Hiển thị thông báo dựa vào phản hồi từ server
+                            $('#messageContainer').html('<p>' + response + '</p>');
+                        },
+                            error: function(error) {
+                            console.log('Error:', error);
+                        },
+                        // complete: function(response) {
+                        //     alert('Gửi thông tin thành công');
+                        // }
+                        });
+                    }
+                    else{
+                        $('#messageContainer').html('<p>Tên tài khoản đã tồn tại, vui lòng thử lại.</p>');
+
+                    }
+                })
+                .catch(error => console.log('Error fetching options:', error));
+            }
 
 
-            $.ajax({
-            type: "POST",
-            url: "/register",
-            data: formData,
-            success: function(response) {
-                // Hiển thị thông báo dựa vào phản hồi từ server
-                $('#messageContainer').html('<p>' + response + '</p>');
-            },
-                error: function(error) {
-                console.log('Error:', error);
-            },
-            // complete: function(response) {
-            //     alert('Gửi thông tin thành công');
-            // }
-            });
+
+
+
         })
 
 

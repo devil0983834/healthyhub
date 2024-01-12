@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <table id="myTable">
+    <tr>
+      <td>Row 1, Cell 1</td>
+      <td>Row 1, Cell 2</td>
+    </tr>
+    <tr>
+      <td>Row 2, Cell 1</td>
+      <td>Row 2, Cell 2</td>
+    </tr>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var table = document.getElementById('myTable');
+
+      // Lấy vị trí của ô (rowIndex và cellIndex đều bắt đầu từ 0)
+      var rowPosition = table.rows[1].cells[0].parentNode.rowIndex + 1; // Vị trí của hàng (1-based)
+      var colPosition = table.rows[1].cells[0].cellIndex + 1; // Vị trí của cột (1-based)
+
+      console.log("Hàng: " + rowPosition + ", Cột: " + colPosition);
+    });
+  </script>
+
+</body>
+</html>

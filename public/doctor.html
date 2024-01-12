@@ -36,13 +36,9 @@
   <link rel="stylesheet" href="./css/doctor.css">
   <!-- responsive style -->
   <link href="css/responsive.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/allin.css">
 
-  <style>
-    #errorMessage{
-      margin: 10px 0 10px 5px;
-      padding: 10px 20px;
-    }
-  </style>
+
 
 </head>
 
@@ -86,6 +82,9 @@
                   </li>
                   <li class="nav-item"id="info_person">
                     <a class="nav-link" href="./info.html">Info Person</a>
+                  </li>
+                  <li class="nav-item " id="doctorcheck" style="display:none">
+                    <a class="nav-link" href="/doctorcheck">Doctor calendar</a>
                   </li>
                 </ul>
               </div>
@@ -533,7 +532,26 @@
     
     </script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // Mã JavaScript của bạn sẽ chạy ở đây
+    fetch(`/Login-doctor`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          if(data){
+            info_person.style.display = 'none';
+            doctorcheck.style.display = 'block';
+          }else{
+            doctorcheck.style.display = 'none';
+            info_person.style.display = 'block';
 
+          }
+      })
+      .catch(error => console.log('Error:', error));
+    });
+
+  </script>
       
 
 </body>

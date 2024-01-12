@@ -9,43 +9,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
   <link rel="stylesheet" href="./css/sign.css">
-  <style>
-    #table_doctor,#table_patient{
-      border-collapse: collapse;
-      width: 100%;
-      background-color: white;
-    }
 
-    #info_patient{
-      margin-top: 72px;
-      display: none;
-    }
-    #info_medi{
-      display: none;
-      margin-top: 72px;
-      margin-bottom: 72px;
-    }
-    #schedule_info{
-      margin-top: 72px;
+  <link rel="stylesheet" href="./css/allin.css">
 
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
-    .btn-submit{
-      padding: 10px 20px;
-    }
-    .check:hover{
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
   <div class="back-icon">
@@ -53,98 +19,128 @@
         <i class="far fa-times-circle"></i>
     </a>
 </div>
-<div class="container" id="schedule_info">
-  <div class="row">
-    <div class="col col-m-12">
-      <h2 id="header_patient">Schedule for Next 7 Days</h2>
+<div id="content">
+  <div class="container" id="schedule_info">
+    <div class="row">
+      <div class="col col-m-12">
+        <h2 id="header_patient">Schedule for Next 7 Days</h2>
+    
+          <table id="table_doctor">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>8h</th>
+                <th>9h</th>
+                <th>10h</th>
+                <th>13h</th>
+                <th>14h</th>
+                <th>15h</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+      </div>
+    </div>
   
-        <table id="table_doctor">
+  </div>
+  
+  <div class="container" id="info_patient">
+  
+    <div class="row">
+      <div class="col">
+        <h2>Patient Information</h2>
+        <table id="table_patient">
           <thead>
             <tr>
-              <th>Day</th>
-              <th>8h</th>
-              <th>9h</th>
-              <th>10h</th>
-              <th>13h</th>
-              <th>14h</th>
-              <th>15h</th>
+                <th></th>
+                <th>Full Name</th>
+                <th>Birthday</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+  
             </tr>
-          </thead>
-          <tbody id="scheduleBody"></tbody>
-        </table>
-    </div>
-  </div>
-
-</div>
-
-<div class="container" id="info_patient">
-
-  <div class="row">
-    <div class="col">
-      <h2>Patient Information</h2>
-      <table id="table_patient">
-        <thead>
-          <tr>
-              <th></th>
-              <th>Full Name</th>
-              <th>Birthday</th>
-              <th>Phone Number</th>
-              <th>Email</th>
-
+        </thead>
+        <tbody >
+          <tr id="info">
+              <td>Info:</td>
+  
           </tr>
-      </thead>
-      <tbody >
-        <tr id="info">
-            <td>Info:</td>
-
-        </tr>
-      </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<div class="container" id="info_medi">
-
-  <div class="row">
-    <div class="col">
-      <h2>Examination Results</h2>
-      <form id="form-medi" action="/post-medi" method="post"  >
-        <div class="form-group">
-            <label for="disease">Disease Name</label>
-            <input type="text" id="disease"  name="disease" placeholder="disease" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-          <label for="medicine">Medicine Name</label>
-          <input type="text" id="medicine"  name="medicine" placeholder="medicine" class="form-control" required>
+        </tbody>
+        </table>
       </div>
-      <div class="form-group">
-        <label for="dosage">Dosage</label>
-        <input type="text" id="dosage"  name="dosage" placeholder="dosage" class="form-control" required>
     </div>
-    <div class="form-group">
-      <label for="price">Price</label>
-      <input type="text" id="price"  name="price" placeholder="price" class="form-control" required>
+  </div>
+  
+  <div class="container" id="info_medi">
+  
+    <div class="row">
+      <div class="col">
+        <h2>Examination Results</h2>
+        <form id="form-medi" action="/post-medi" method="post"  >
+          <div class="form-group">
+              <label for="disease">Disease Name</label>
+              <input type="text" id="disease"  name="disease" placeholder="disease" class="form-control" required>
+          </div>
+  
+          <div class="form-group">
+            <label for="medicine">Medicine Name</label>
+            <input type="text" id="medicine"  name="medicine" placeholder="medicine" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="dosage">Dosage</label>
+          <input type="text" id="dosage"  name="dosage" placeholder="dosage" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Price</label>
+          <input type="text" id="price"  name="price" placeholder="price" class="form-control" required>
+        </div>
+  
+  
+          <div id="errorMessage" class="error-message"></div>
+  
+          <input type="button" class="btn btn-submit" onclick="submitForm()" value="Submit">
+  
+      </form>
+      </div>
+    </div>
   </div>
 
+  <div class="container" id="doctor_app_pan">
 
-        <div id="errorMessage" class="error-message"></div>
+    <h2>Input Patient To Appointment</h2>
+    <form action="/post-app-doctor" method="post">
+      <div class="form-group select_check">
 
-        <input type="button" class="btn btn-submit" onclick="submitForm()" value="Submit">
-
+        <input type="text" class="search_input-name" placeholder="Tìm kiếm...">
+          <div class="select-options">
+          </div>
+  
+        </div>
+  
+  
+  
+      <input type="button" class="btn btn-submit" onclick="handleAppPatient(this)" value="Submit">
     </form>
-    </div>
-  </div>
+
+
 </div>
   <!-- jQery -->
   <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <!-- nice select -->
 <script>
-    const info_medi = document.getElementById('info_medi');
+  const info_medi = document.getElementById('info_medi');
+  const doctor_app_pan = document.getElementById('doctor_app_pan');  
+  const table_patient = document.getElementById('info_patient');
+  const selectOption = document.querySelector('.select-options')
+  const form_medi = document.getElementById('form-medi');
+  const customSelect = document.querySelector('.select_check');
+  const searchInput = customSelect.querySelector('.search_input-name');
+  let timedate = ['8h','9h','10h','13h','14h','15h']
 
-  var a;
+  var a;// lưu id bệnh nhân
+
+  var elementClick;// lưu element vừa trỏ
   document.addEventListener('DOMContentLoaded', function () {
     // Lấy ngày hiện tại
     const currentDate = new Date();
@@ -179,17 +175,14 @@
     fetch(`/get-info-app`)
       .then(response => response.json())
       .then(data => {
-        let timedate = ['8h','9h','10h','13h','14h','15h']
         for (let i = 0; i < data.length; i++) {
           
             let date = formatDate(data[i][`Appoint Date`]);
             const dateCell = document.getElementById(`${date}`); // +1 vì chỉ số 0 là tiêu đề ngày
             var parentElement = dateCell.parentNode;
-            console.log(dateCell);
             for(let j = 0; j < data.length; j++) {
                 if(data[i][`Start Time`] == timedate[j] ){
                 let Child = parentElement.children[j+1];
-                console.log(Child)
                 Child.style.background = 'green';
                 Child.id = `${data[i][`Patient ID`]}`;
             }
@@ -208,15 +201,23 @@
     fetch(`/get-patient-app`)
       .then(response => response.json())
       .then(data => {
+        let cout = 0;
         data.forEach(patient => {
           a = patient[`Patient ID`];
-          console.log(a-elementId);
           if(a == elementId){
-            const table_patient = document.getElementById('info_patient');
+            cout++;
+           
 
             const info = document.getElementById('info'); 
             info.innerHTML="<td>Info:</td>";
             table_patient.style.display = 'block'
+            info_medi.style.display = 'block';
+            doctor_app_pan.style.display = 'none'; 
+            if(elementClick!=undefined){
+              elementClick.style.backgroundColor = 'white';
+            }
+
+
             let patient_key = ['Full Name','Birth','Phone Number','email']
             for (var key in patient) {
               for(let i = 0; i < patient_key.length;i++){
@@ -226,30 +227,38 @@
                   const Cell_info= document.createElement('td');
                   Cell_info.textContent = value;
                   info.appendChild(Cell_info);
-                }else{
-                  var value = patient[key]
-                  const Cell_info= document.createElement('td');
-                  Cell_info.textContent = value;
-                  info.appendChild(Cell_info);
+                  }else{
+                    var value = patient[key]
+                    const Cell_info= document.createElement('td');
+                    Cell_info.textContent = value;
+                    info.appendChild(Cell_info);
+                  }
                 }
-
               }
-
-            
             }
-
-            
-
-
           }
+        });
 
+        if(cout==0){
+          doctor_app_pan.style.display = 'block'; 
+          table_patient.style.display = 'none'
+          info_medi.style.display = 'none';
+          if(elementClick!=undefined){
+            elementClick.style.backgroundColor = 'white';
+          }
+          elementClick=element;
+
+          element.style.backgroundColor = '#00c6a9';
+          data.forEach(patient =>{
+            const op = document.createElement('div'); 
+            op.innerHTML = `${patient[`Full Name`]} - ${patient[`Phone Number`]}`
+            op.id = patient[`Patient ID`];
+            selectOption.appendChild(op);
+          })
+          handleInput()
         }
-          
-      });
-
-    })
+      })
     .catch(error => console.log('Error:', error));
-    info_medi.style.display = 'block';
 
 
   
@@ -276,12 +285,10 @@
   }
 
  
-  const form_medi = document.getElementById('form-medi');
 
 
     function submitForm(){
       event.preventDefault();
-      console.log(a);
       let formData1 = {
         disease: document.getElementById('disease').value,
         medicine: document.getElementById('medicine').value,
@@ -304,11 +311,78 @@
         form_medi.submit();
       }
 
-    
-    if(info_medi.style.display != 'none'){
 
+    function handleInput(){
+
+      var selectOptions = customSelect.querySelector('.select-options').querySelectorAll('div');
+
+      searchInput.addEventListener('input', function() {
+        var searchTerm = searchInput.value.toLowerCase();
+
+        selectOptions.forEach(function(option) {
+          var text = option.innerText.toLowerCase();
+          if (text.includes(searchTerm)) {
+            option.style.display = 'block';
+          } else {
+            option.style.display = 'none';
+          }
+        });
+      });
+      customSelect.addEventListener('click', function(event) {
+        event.stopPropagation();
+        customSelect.classList.toggle('active');
+      });
+
+      document.addEventListener('click', function(event) {
+        var isInsideCustomSelect = customSelect.contains(event.target);
+        if (!isInsideCustomSelect) {
+          customSelect.classList.remove('active');
+        }
+      });
+
+
+      selectOptions.forEach(function(option) {
+        option.addEventListener('click', function() {
+          searchInput.value = option.innerText;
+          searchInput.id = option.id;
+
+          customSelect.classList.remove('active');
+          // Xóa giá trị của input để đảm bảo là option sẽ không bị giữ lại
+          searchInput.dispatchEvent(new Event('input'));
+        });
+      });
     }
+    
+
+    function handleAppPatient(ele){
+      let value = parseInt(searchInput.id, 10);
+      let farther = elementClick.parentElement;
+      let date = farther.firstElementChild.id;
+      //xác đinh elementClick là element thứ mấy trong farther
+      var childIndex = Array.from(farther.children).indexOf(elementClick) ;
+      let time = timedate[childIndex-1]
+      var DataInput = {
+          inputSymptoms: time,
+          inputTimeDay: date,
+          inputID : value
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/post-app-doctor',
+            data: DataInput,
+            success: function(data) {
+              console.log(data);
+              alert(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('There has elementClickeen a problem with your AJAX request:', errorThrown);
+            }
+        });
+      }
 </script>
+
+
 
 </body>
 </html>

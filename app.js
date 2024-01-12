@@ -251,6 +251,7 @@ app.get('/get-patient-info', (req, res) => {
   res.json(results);
 });
 });
+
 var doctor_check;
 app.get('/doctor', (req, res) => {
   // Trả về trang cho các bác sĩ và truyền biến name
@@ -278,6 +279,7 @@ app.get('/info_doctor_check', (req, res) => {
     res.json(results);
   });
 });
+
 
 
 
@@ -334,15 +336,49 @@ app.post('/post-app', (req, res) => {
   const sql = 'INSERT INTO appointment (`Appointment ID`,`Start Time`, `Appoint Date`,  `Doctor ID`,`Patient ID`) VALUES (?, ?, ?, ?, ?)';
 
   const values = [IDNumber, data.inputSymptoms,data.inputTimeDay,data.inputDoctorName, IDNumber];
+  if(IDNumber === undefined){
+    res.json('Bác sĩ không thể đặt lịch');
 
+  }
+  else{
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+  
+          res.json('Bạn đã có hẹn với một bác sĩ khác');
+        } else {
+          // Xử lý lỗi khác
+          console.log(err);
+        }
+      } else {
+        res.json('Gửi thông tin thành công');
+        
+      }
+  
+      
+    });
+  }
+
+});
+
+//bác sĩ tự đặt lịch
+app.post('/post-app-doctor', (req, res) => {
+  const data = req.body;
+
+  // Thực hiện truy vấn SQL để chèn dữ liệu vào bảng timeapp
+  const sql = 'INSERT INTO appointment (`Appointment ID`,`Start Time`, `Appoint Date`,  `Doctor ID`,`Patient ID`) VALUES (?, ?, ?, ?, ?)';
+
+  const values = [data.inputID, data.inputSymptoms,data.inputTimeDay,idDoctor, data.inputID];
+
+  console.log(data);
   connection.query(sql, values, (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
 
-        res.json('Bạn đã có hẹn với một bác sĩ khác');
+        res.json('Bệnh nhân đã có lịch hẹn');
       } else {
         // Xử lý lỗi khác
-        console.log(err);
+        res.json('Đã xảy ra lỗi vui lòng thử lại sau');
       }
     } else {
       res.json('Gửi thông tin thành công');
@@ -351,8 +387,11 @@ app.post('/post-app', (req, res) => {
 
     
   });
+  
+
 });
 
+//gửi thuốc từ bác sĩ
 app.post('/post-medi', (req, res) => {
   const data = req.body;
   console.log('data',data);
@@ -382,8 +421,11 @@ app.post('/post-medi', (req, res) => {
   });
 });
 
+//lấy thuốc
 app.get('/get-medi', (req, res) => {
   // Thực hiện truy vấn SQL để lấy dữ liệu
+  console.log(IDNumber);
+
   const query = `
     SELECT *
     FROM medicine
@@ -405,6 +447,30 @@ app.get('/get-medi', (req, res) => {
 
 });
 
+// lấy thông tin lịch hẹn
+app.get('/get-app-patient', (req, res) => {
+  // Thực hiện truy vấn SQL để lấy dữ liệu
+  console.log(IDNumber);
+  const query = `
+    SELECT *
+    FROM nhom_9.appointment
+    INNER JOIN nhom_9.doctor ON nhom_9.appointment.\`Doctor ID\` = nhom_9.doctor.\`Doctor ID\`
+    WHERE \`Patient ID\` = ${IDNumber};
+  `;
+
+  // Thực hiện truy vấn
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Lỗi truy vấn: ', err);
+      throw err;
+    }
+
+    console.log(results,IDNumber);
+    res.send(results);
+
+  });
+
+});
 
 app.listen(port, () => {
   console.log(`Server đang lắng nghe tại http://localhost:${port}`);
